@@ -17,3 +17,5 @@ $ sqdiff left_file right_file
 ```
 
 Show differences between sql queries in a two column view.
+
+# Dummy comment
