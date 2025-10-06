@@ -4,6 +4,10 @@ on:
     types: [opened, synchronize, reopened]
   push:
     branches: [main, master, develop]
+permissions:
+    checks: write
+    statuses: write
+    contents: read
 
 jobs:
   e2e-results:
