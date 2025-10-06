@@ -1,0 +1,20 @@
+name: After E2E Success
+
+  on:
+    status: {}
+
+  jobs:
+    after-e2e:
+      runs-on: ubuntu-latest
+      if: github.event.state == 'success' && github.event.context == 'test/suite_e2e/results'
+
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+
+        - name: Run post-E2E tasks
+          run: |
+            echo "E2E tests passed! Running follow-up tasks..."
+            echo "Commit SHA: ${{ github.event.sha }}"
+            echo "Branch: ${{ github.event.branches[0].name }}"
+            # Add your post-E2E logic here
