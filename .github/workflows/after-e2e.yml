@@ -1,20 +1,21 @@
 name: After E2E Success
 on:
-  status
+  check_run:
+    types: [completed]
 permissions:
-  statuses: read
+  checks: read
 jobs:
   after-e2e:
     runs-on: ubuntu-latest
     if: >-
-      (github.event.state == 'success' && github.event.context == 'e2e-results') ||
-      (github.event.check_suite.conclusion == 'success' && github.event.check_suite.app.name == 'GitHub Actions')
+      github.event.check_run.conclusion == 'success' && 
+      github.event.check_run.name == 'e2e-results-check'
     steps:
       - name: Run post-E2E tasks
         run: |
           echo "E2E tests passed! Running follow-up tasks..."
-          echo "Commit SHA: ${{ github.event.sha }}"
-          echo "Branch: ${{ github.event.branches[0].name }}"
+          echo "Commit SHA: ${{ github.event.check_run.head_sha }}"
+          echo "Check Run Name: ${{ github.event.check_run.name }}"
           # Add your post-E2E logic here
           #
       - name: React

@@ -22,17 +22,22 @@ jobs:
           sleep 5
           echo "E2E tests completed successfully!"
       
-      - name: Create Status
+      - name: Create Check Run
         uses: actions/github-script@v6
         if: always()
         with:
           script: |
-            github.rest.repos.createCommitStatus({
+            const conclusion = '${{ job.status }}' === 'success' ? 'success' : 'failure';
+            await github.rest.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              sha: context.sha,
-              state: '${{ job.status }}' === 'success' ? 'success' : 'failure',
-              context: 'e2e-results',
-              description: 'E2E test results'
+              name: 'e2e-results-check',
+              head_sha: context.sha,
+              status: 'completed',
+              conclusion: conclusion,
+              output: {
+                title: 'E2E Test Results',
+                summary: `E2E tests ${conclusion === 'success' ? 'passed' : 'failed'}`
+              }
             });
 
