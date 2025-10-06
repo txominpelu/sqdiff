@@ -5,7 +5,7 @@ on:
 jobs:
   after-e2e:
     runs-on: ubuntu-latest
-    if: github.event.state == 'success' && github.event.context == 'e2e-results'
+    if: github.event.state == 'success'
 
     steps:
       - name: Run post-E2E tasks
