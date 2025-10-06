@@ -14,19 +14,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Create E2E Results Check
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const { data: check } = await github.rest.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'test/suite_e2e/results',
-              head_sha: context.sha,
-              status: 'in_progress',
-              details_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
-            });
-
       - name: Run E2E Test (Hello World)
         run: |
           echo "Hello World"
