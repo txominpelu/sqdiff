@@ -1,17 +1,20 @@
 name: After E2E Success
 on:
-  status:
+  workflow_run:
+    workflows: ["E2E Test Suite"]
+    types:
+      - completed
 jobs:
   after-e2e:
     runs-on: ubuntu-latest
-    if: github.event.state == 'success'
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Run post-E2E tasks
         run: |
           echo "E2E tests passed! Running follow-up tasks..."
-          echo "Commit SHA: ${{ github.event.sha }}"
-          echo "Branch: ${{ github.event.branches[0].name }}"
+          echo "Commit SHA: ${{ github.event.workflow_run.head_sha }}"
+          echo "Branch: ${{ github.event.workflow_run.head_branch }}"
           # Add your post-E2E logic here
           #
       - name: React
@@ -32,6 +35,6 @@ jobs:
                 issue_number: prNumber,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: `${{ steps.query_beagle.outputs.result }}`
+                body: `E2E tests completed successfully! ✅`
               });
             }
