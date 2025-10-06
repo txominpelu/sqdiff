@@ -1,11 +1,11 @@
-name: After E2E Success
+name: After Success
 on:
   check_run:
     types: [completed]
 permissions:
   checks: read
 jobs:
-  after-e2e:
+  after:
     runs-on: ubuntu-latest
     if: >-
       github.event.check_run.conclusion == 'success' && 
