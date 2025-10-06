@@ -37,7 +37,7 @@ jobs:
           echo "Hello World"
           echo "Running E2E test suite..."
           # Simulate some test time
-          sleep 30
+          sleep 60
           echo "E2E tests completed successfully!"
       
       - name: Complete Check Run

@@ -7,9 +7,6 @@ permissions:
 jobs:
   after:
     runs-on: ubuntu-latest
-    if: >-
-      github.event.check_run.conclusion == 'success' && 
-      github.event.check_run.name == 'e2e-results-check'
     steps:
       - name: Run post-E2E tasks
         run: |
