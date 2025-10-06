@@ -2,7 +2,7 @@ name: After E2E Success
 on:
   status:
 permissions:
-  statuses
+  statuses: read
 jobs:
   after-e2e:
     runs-on: ubuntu-latest
