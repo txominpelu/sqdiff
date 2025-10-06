@@ -14,27 +14,45 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Create Initial Check Run
+        id: create_check
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { data: check } = await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'e2e-results-check',
+              head_sha: context.sha,
+              status: 'in_progress',
+              output: {
+                title: 'E2E Test Results',
+                summary: 'E2E tests are running...'
+              }
+            });
+            return check.id;
+
       - name: Run E2E Test (Hello World)
         run: |
           echo "Hello World"
           echo "Running E2E test suite..."
           # Simulate some test time
-          sleep 5
+          sleep 60
           echo "E2E tests completed successfully!"
       
-      - name: Create Check Run
+      - name: Complete Check Run
         uses: actions/github-script@v6
         if: always()
         with:
           script: |
             const conclusion = '${{ job.status }}' === 'success' ? 'success' : 'failure';
-            await github.rest.checks.create({
+            await github.rest.checks.update({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              name: 'e2e-results-check',
-              head_sha: context.sha,
+              check_run_id: ${{ steps.create_check.outputs.result }},
               status: 'completed',
               conclusion: conclusion,
+              completed_at: new Date().toISOString(),
               output: {
                 title: 'E2E Test Results',
                 summary: `E2E tests ${conclusion === 'success' ? 'passed' : 'failed'}`
