@@ -1,71 +1,70 @@
 name: E2E Test Suite
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main, master, develop]
 
-  on:
-    pull_request:
-      types: [opened, synchronize, reopened]
-    push:
-      branches: [main, master, develop]
+jobs:
+  e2e-results:
+    runs-on: ubuntu-latest
 
-  jobs:
-    e2e-results:
-      runs-on: ubuntu-latest
+    steps:
+      - name: Create E2E Results Check
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { data: check } = await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'test/suite_e2e/results',
+              head_sha: context.sha,
+              status: 'in_progress',
+              details_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            });
 
-      steps:
-        - name: Create E2E Results Check
-          uses: actions/github-script@v6
-          with:
-            script: |
-              const { data: check } = await github.rest.checks.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'test/suite_e2e/results',
-                head_sha: context.sha,
-                status: 'in_progress',
-                details_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
-              });
+      - name: Run E2E Test (Hello World)
+        run: |
+          echo "Hello World"
+          echo "Running E2E test suite..."
+          # Simulate some test time
+          sleep 5
+          echo "E2E tests completed successfully!"
 
-        - name: Run E2E Test (Hello World)
-          run: |
-            echo "Hello World"
-            echo "Running E2E test suite..."
-            # Simulate some test time
-            sleep 5
-            echo "E2E tests completed successfully!"
+      - name: Update Check Status - Success
+        if: success()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'test/suite_e2e/results',
+              head_sha: context.sha,
+              status: 'completed',
+              conclusion: 'success',
+              details_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              output: {
+                title: 'E2E Tests Passed',
+                summary: 'All end-to-end tests completed successfully'
+              }
+            });
 
-        - name: Update Check Status - Success
-          if: success()
-          uses: actions/github-script@v6
-          with:
-            script: |
-              await github.rest.checks.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'test/suite_e2e/results',
-                head_sha: context.sha,
-                status: 'completed',
-                conclusion: 'success',
-                details_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
-                output: {
-                  title: 'E2E Tests Passed',
-                  summary: 'All end-to-end tests completed successfully'
-                }
-              });
-
-        - name: Update Check Status - Failure
-          if: failure()
-          uses: actions/github-script@v6
-          with:
-            script: |
-              await github.rest.checks.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: 'test/suite_e2e/results',
-                head_sha: context.sha,
-                status: 'completed',
-                conclusion: 'failure',
-                details_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
-                output: {
-                  title: 'E2E Tests Failed',
-                  summary: 'One or more end-to-end tests failed'
-                }
-              });
+      - name: Update Check Status - Failure
+        if: failure()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'test/suite_e2e/results',
+              head_sha: context.sha,
+              status: 'completed',
+              conclusion: 'failure',
+              details_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              output: {
+                title: 'E2E Tests Failed',
+                summary: 'One or more end-to-end tests failed'
+              }
+            });
