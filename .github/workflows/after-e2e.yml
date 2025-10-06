@@ -1,6 +1,6 @@
 name: After E2E Success
 on:
-  status
+  status:
 jobs:
   after-e2e:
     runs-on: ubuntu-latest
