@@ -1,7 +1,6 @@
 name: After E2E Success
 on:
-  status:
-  check_suite:
+  status
 permissions:
   statuses: read
 jobs:
