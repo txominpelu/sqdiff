@@ -1,7 +1,6 @@
 name: After E2E Success
 on:
-  status: {}
-
+  status
 jobs:
   after-e2e:
     runs-on: ubuntu-latest
@@ -19,10 +18,10 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            console.log('issue number', context.issue.number)
-            console.log('event_name', github.event_name)
-            console.log('repo.owner', context.repo.owner)
-            console.log('repo.repo', context.repo.repo)
+            console.log('issue number', context.issue.number);
+            console.log('event_name', github.event_name);
+            console.log('repo.owner', context.repo.owner);
+            console.log('repo.repo', context.repo.repo);
             
             const prNumber = github.event_name === 'issue_comment'
               ? context.issue.number
