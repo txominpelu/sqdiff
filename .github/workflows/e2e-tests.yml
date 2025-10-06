@@ -21,4 +21,18 @@ jobs:
           # Simulate some test time
           sleep 5
           echo "E2E tests completed successfully!"
+      
+      - name: Create Status
+        uses: actions/github-script@v6
+        if: always()
+        with:
+          script: |
+            github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state: '${{ job.status }}' === 'success' ? 'success' : 'failure',
+              context: 'e2e-results',
+              description: 'E2E test results'
+            });
 
