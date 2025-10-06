@@ -17,3 +17,25 @@ jobs:
           echo "Commit SHA: ${{ github.event.sha }}"
           echo "Branch: ${{ github.event.branches[0].name }}"
           # Add your post-E2E logic here
+          #
+      - name: Update Check Status - Success
+        uses: actions/github-script@v6
+        with:
+          script: |
+            console.log('issue number', context.issue.number)
+            console.log('event_name', github.event_name)
+            console.log('repo.owner', context.repo.owner)
+            console.log('repo.repo', context.repo.repo)
+            
+            const prNumber = github.event_name === 'issue_comment'
+              ? context.issue.number
+              : null;
+
+            if (prNumber) {
+              github.rest.issues.createComment({
+                issue_number: prNumber,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `${{ steps.query_beagle.outputs.result }}`
+              });
+            }
